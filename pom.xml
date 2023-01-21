@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.axialworks</groupId>
+    <artifactId>root-pom</artifactId>
+    <version>0.0.1</version>
+
+    <packaging>pom</packaging>
+
+    <name>Axial Root POM</name>
+    <description>Axial Root POM</description>
+    <url>https://github.com/sky3s/axial-root-pom</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/sky3s/axial-root-pom.git</connection>
+        <developerConnection>scm:git:ssh://github.com:sky3s/axial-root-pom.git</developerConnection>
+        <url>https://github.com/sky3s/axial-root-pom/tree/main</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Axial Works Developers</name>
+            <email>dev@axialworks.com</email>
+            <organization>Axial Works</organization>
+            <organizationUrl>http://axialworks.com/</organizationUrl>
+        </developer>
+    </developers>
+
+    <properties>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
+
+        <maven.build.timestamp.format>yyyy_MM_dd_HH_mm</maven.build.timestamp.format>
+        <timestamp>${maven.build.timestamp}</timestamp>
+
+        <!-- Maven Dependencies -->
+        <maven-war-plugin.version>3.1.0</maven-war-plugin.version>
+        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+
+        <!-- Annotation Processor Dependencies-->
+        <lombok.version>1.18.24</lombok.version>
+
+    </properties>
+
+    <dependencyManagement>
+
+        <dependencies>
+
+            <!-- Annotation Processor Dependencies-->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+        </dependencies>
+
+    </dependencyManagement>
+
+    <dependencies>
+
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>mavenCentralDeploy</id>
+            <properties>
+                <!-- Plugin for deploying to Maven Central Repository -->
+                <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
+
+                <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+                <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
+                <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+            </properties>
+            <distributionManagement>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://s01.oss.sonatype.org/content/repositories/releases</url>
+                </repository>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <!-- Plugin for deploying to Maven Central Repository -->
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>${nexus-staging-maven-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>${maven-source-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>${gpg-key}</keyname>
+                                    <passphraseServerId>${gpg-key}</passphraseServerId>
+                                    <passphrase>${gpg-passphrase}</passphrase>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
+        <profile>
+            <id>legacyProfile</id>
+            <activation>
+                <property>
+                    <name>legacy-project</name>
+                    <value>true</value>
+                </property>
+            </activation>
+
+            <properties>
+                <java.version>8</java.version>
+
+                <!-- Java Dependencies -->
+                <jakarta-servlet-api.version>6.0.0</jakarta-servlet-api.version>
+
+                <!-- Spring Dependencies -->
+                <spring-boot.version>2.7.7</spring-boot.version>
+
+                <!-- Swagger 3 / Open API Dependencies  -->
+                <springdoc.version> 1.6.14</springdoc.version>
+
+
+
+            </properties>
+
+        </profile>
+
+        <profile>
+            <id>nonLegacyProfile</id>
+            <activation>
+                <property>
+                    <name>legacy-project</name>
+                    <value>!true</value>
+                </property>
+            </activation>
+
+            <properties>
+                <java.version>17</java.version>
+
+                <!-- Spring Dependencies -->
+                <spring-boot.version>3.0.1</spring-boot.version>
+
+                <!-- Swagger 3 / Open API Dependencies  -->
+                <springdoc.version>2.0.2</springdoc.version>
+
+
+
+            </properties>
+
+        </profile>
+
+
+        <profile>
+            <id>jarProfile</id>
+
+            <activation>
+                <property>
+                    <name>packaging</name>
+                    <value>jar</value>
+                </property>
+            </activation>
+
+            <dependencies>
+
+            </dependencies>
+
+            <build>
+                <plugins>
+
+                    <!-- Builds a Java Archive (JAR) file from the compiled project classes and resources. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>${maven-jar-plugin.version}</version>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>warProfile</id>
+
+            <activation>
+                <property>
+                    <name>packaging</name>
+                    <value>war</value>
+                </property>
+            </activation>
+
+            <dependencies>
+                <!-- Spring Dependencies -->
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                    <version>${spring-boot.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-starter-logging</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-log4j2</artifactId>
+                    <version>${spring-boot.version}</version>
+                </dependency>
+
+                <!-- Java Dependencies -->
+                <dependency>
+                    <groupId>jakarta.servlet</groupId>
+                    <artifactId>jakarta.servlet-api</artifactId>
+                    <version>${jakarta-servlet-api.version}</version>
+                </dependency>
+
+                <!-- Annotation Processor Dependencies-->
+                <dependency>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok</artifactId>
+                    <version>${lombok.version}</version>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <finalName>${project.artifactId}-${project.version}</finalName>
+
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>${maven-compiler-plugin.version}</version>
+                        <configuration>
+                            <!-- Java Version -->
+                            <source>${java.version}</source>
+                            <target>${java.version}</target>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                    <version>${lombok.version}</version>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>${maven-war-plugin.version}</version>
+                        <!--Adding a provided "spring-boot-starter-tomcat" dependency as stated in-->
+                        <!--here https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-create-a-deployable-war-file-->
+                        <!--doesn't work. The generated war runs on Weblogic but the project won't run via spring-boot:run or via IDE-->
+                        <configuration>
+                            <packagingExcludes>WEB-INF/lib/tomcat-*.jar</packagingExcludes>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <version>${spring-boot.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>repackage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+
+                <!-- maven does not copy the parent project resources -->
+                <!-- this filtering only works for this project's resources -->
+                <!-- see https://issues.apache.org/jira/browse/MNG-2751 -->
+                <!-- this configuration also required for using values like @ in yml -->
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
+
+            </build>
+        </profile>
+
+    </profiles>
+
+    <build>
+
+        <plugins>
+
+            <!-- The Compiler Plugin is used to compile the sources of your project. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <!-- Java Version -->
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+</project>
